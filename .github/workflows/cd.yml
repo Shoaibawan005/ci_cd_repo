@@ -47,7 +47,7 @@ jobs:
       - name: Install & Start with PM2
         working-directory: /home/kali/deploy/node-app
         run: |
-          sudo npm i -g pm2
+          
           # Start or reload the process
           if pm2 describe express-ci-cd-demo >/dev/null 2>&1; then
             pm2 reload express-ci-cd-demo --update-env
