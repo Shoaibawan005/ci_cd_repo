@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware: serve static files (like CSS/JS if you add later)
 app.use(express.static(path.join(__dirname, "public")));
 
+
 // Route: Home (HTML page)
 app.get("/", (req, res) => {
   res.send(`
