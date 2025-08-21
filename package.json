@@ -1,0 +1,12 @@
+{
+  "name": "express-ci-cd-demo",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js",
+    "build": "echo 'Build step (not needed for express app)'",
+    "test": "echo 'No tests defined' && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
