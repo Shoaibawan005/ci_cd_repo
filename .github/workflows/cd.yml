@@ -9,29 +9,49 @@ jobs:
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
+
     env:
+      NODE_ENV: production
       PORT: 3000
-      APP_MESSAGE: "Hello from CD pipeline!"
+      APP_MESSAGE: "Hello from CD on Kali!"
+
     steps:
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Download artifact
+      - name: Download artifact from CI
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: ~/deploy
+          path: ~/deploy/node-app
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Unzip
+      - name: Unzip artifact
         run: |
-          cd ~/deploy
+          cd ~/deploy/node-app
           unzip -o app.zip
 
-      - name: Install deps
-        working-directory: ~/deploy
-        run: npm install --omit=dev
+      - name: Install production deps
+        working-directory: ~/deploy/node-app
+        run: npm ci --omit=dev || npm install --omit=dev
 
-      - name: Run app
-        working-directory: ~/deploy
-        run: nohup npm start > app.log 2>&1 &
+      - name: Write .env (from workflow env)
+        working-directory: ~/deploy/node-app
+        run: |
+          printf "NODE_ENV=%s\nPORT=%s\nAPP_MESSAGE=%s\n" \
+            "$NODE_ENV" "$PORT" "$APP_MESSAGE" > .env
+
+      - name: Install & Start with PM2
+        working-directory: ~/deploy/node-app
+        run: |
+          sudo npm i -g pm2
+          # Start or reload the process
+          if pm2 describe express-ci-cd-demo >/dev/null 2>&1; then
+            pm2 reload express-ci-cd-demo --update-env
+          else
+            pm2 start index.js --name express-ci-cd-demo
+          fi
+          pm2 save
