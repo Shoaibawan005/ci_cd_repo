@@ -25,27 +25,27 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: ~/deploy/node-app
+          path: /home/kali/deploy/node-app
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Unzip artifact
         run: |
-          cd ~/deploy/node-app
+          cd /home/kali/deploy/node-app
           unzip -o app.zip
 
       - name: Install production deps
-        working-directory: ~/deploy/node-app
+        working-directory: /home/kali/deploy/node-app
         run: npm ci --omit=dev || npm install --omit=dev
 
       - name: Write .env (from workflow env)
-        working-directory: ~/deploy/node-app
+        working-directory: /home/kali/deploy/node-app
         run: |
           printf "NODE_ENV=%s\nPORT=%s\nAPP_MESSAGE=%s\n" \
             "$NODE_ENV" "$PORT" "$APP_MESSAGE" > .env
 
       - name: Install & Start with PM2
-        working-directory: ~/deploy/node-app
+        working-directory: /home/kali/deploy/node-app
         run: |
           sudo npm i -g pm2
           # Start or reload the process
