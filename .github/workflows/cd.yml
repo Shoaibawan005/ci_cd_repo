@@ -55,3 +55,7 @@ jobs:
             pm2 start index.js --name express-ci-cd-demo
           fi
           pm2 save
+        
+      - name: Open in browser (if GUI available)
+        run: |
+            xdg-open "http://localhost:3000" || true
