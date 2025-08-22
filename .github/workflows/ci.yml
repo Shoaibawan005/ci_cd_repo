@@ -13,6 +13,7 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run build
+      
       - name: Zip app
         run: zip -r app.zip index.js package.json
       - name: Upload artifact
